@@ -10,17 +10,17 @@
 
             var ranges = inputs[0].Split(',').Select(r => r.Split('-').Select(long.Parse).ToArray()).ToArray();
 
-            foreach (var range in ranges)
+            Parallel.ForEach(ranges, range =>
             {
                 for (long i = range[0]; i <= range[1]; i++)
                 {
                     string id = i.ToString();
-                    if (id.Length %  2 == 0 && id[..(id.Length/2)] == id[(id.Length / 2)..])
+                    if (id.Length % 2 == 0 && id[..(id.Length / 2)] == id[(id.Length / 2)..])
                     {
-                        result += i;
+                        Interlocked.Add(ref result, i);
                     }
                 }
-            }
+            });
 
             return result;
         }
@@ -33,25 +33,25 @@
 
             var ranges = inputs[0].Split(',').Select(r => r.Split('-').Select(long.Parse).ToArray()).ToArray();
 
-            foreach (var range in ranges)
+            Parallel.ForEach(ranges, range =>
             {
                 for (long i = range[0]; i <= range[1]; i++)
                 {
                     string id = i.ToString();
-                    for (int j = 1; j < id.Length; j++)
+                    for (int j = 2; j < id.Length; j++)
                     {
                         if (id.Length % j == 0)
                         {
                             var chunks = Enumerable.Range(0, id.Length / j).Select(i => id.Substring(i * j, j)).ToHashSet();
                             if (chunks.Count == 1)
                             {
-                                result += i;
+                                Interlocked.Add(ref result, i);
                                 break;
-                            }        
+                            }
                         }
                     }
                 }
-            }
+            });
 
             return result;
         }
